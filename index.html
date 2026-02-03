@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Colorful Surprise For You! 🌈</title>
+    <style>
+        :root {
+            --bg-main: #1a1a1a;
+            --text-light: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Avenir', 'Segoe UI', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(to bottom, #2a2a2a, var(--bg-main));
+            width: 100%;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; color: #ffeb3b; text-shadow: 0 0 15px rgba(255, 235, 59, 0.5); }
+        .subtitle { opacity: 0.8; font-size: 1.1rem; }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 90%;
+            max-width: 1100px;
+            padding: 20px 0 100px 0;
+        }
+
+        /* VIBRANT TICKET DESIGN */
+        .coupon {
+            height: 180px;
+            border-radius: 20px;
+            display: flex;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            border: none;
+        }
+
+        .coupon:hover { transform: scale(1.05) rotate(1deg); }
+
+        /* The "Punch-out" holes on the sides */
+        .coupon::before, .coupon::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-main);
+            border-radius: 50%;
+            left: -20px;
+            z-index: 5;
+        }
+        .coupon::after { left: auto; right: -20px; }
+        .coupon-inner-hole-top { position: absolute; top: -20px; left: 75px; width: 40px; height: 40px; background: var(--bg-main); border-radius: 50%; z-index: 5; }
+        .coupon-inner-hole-bottom { position: absolute; bottom: -20px; left: 75px; width: 40px; height: 40px; background: var(--bg-main); border-radius: 50%; z-index: 5; }
+
+        .left-strip {
+            width: 90px;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border-right: 3px dashed rgba(255,255,255,0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .main-content h2 { margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+        .main-content p { margin: 5px 0 0; font-weight: bold; opacity: 0.9; }
+
+        .redeemed { filter: grayscale(1) opacity(0.5) !important; transform: scale(0.9) !important; }
+
+        /* FULL SCREEN OVERLAY */
+        #event-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        #event-overlay h2 { font-size: 4rem; margin-bottom: 20px; text-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        #event-overlay p { font-size: 1.8rem; max-width: 800px; line-height: 1.4; }
+
+        .close-btn {
+            margin-top: 40px;
+            padding: 15px 50px;
+            border: none;
+            border-radius: 50px;
+            background: white;
+            color: black;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        .close-btn:hover { transform: scale(1.1); background: #eee; }
+
+        /* ANIMATION ELEMENTS */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1100;
+            animation: fall 3s forwards;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #final-screen {
+            display: none;
+            text-align: center;
+            width: 100%;
+            min-height: 100vh;
+            background: radial-gradient(circle, #ff4081, #c2185b);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: fadeIn 2s;
+        }
+
+        .music-btn {
+            position: fixed; bottom: 20px; right: 20px;
+            background: rgba(255,255,255,0.2); border: 2px solid white;
+            color: white; border-radius: 50%; width: 50px; height: 50px;
+            cursor: pointer; z-index: 2000; font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<button class="music-btn" onclick="toggleMusic()">🎵</button>
+<audio id="bg-audio" loop src="https://www.chosic.com/wp-content/uploads/2021/04/Warm-Memories-Beautiful-Ambience.mp3"></audio>
+
+<header id="header-area">
+    <h1>✨ MY SURPRISE BOX ✨</h1>
+    <p class="subtitle">For the person who makes my world colorful. Tap a ticket!</p>
+</header>
+
+<div class="container" id="coupon-grid"></div>
+
+<div id="final-screen">
+    <h1 style="font-size: 5rem; color: white;">Happy Birthday! 💖</h1>
+    <p style="font-size: 2rem; color: white; max-width: 700px;">Every coupon is yours now. These aren't just gifts, they're memories waiting to happen. I love you!</p>
+    <div style="font-size: 8rem;">🎁🎂🎉</div>
+    <button class="close-btn" onclick="location.reload()">See them again</button>
+</div>
+
+<div id="event-overlay">
+    <h2 id="overlay-title"></h2>
+    <p id="overlay-msg"></p>
+    <button class="close-btn" onclick="closeOverlay()">I love it! ✨</button>
+</div>
+
+<script>
+    const coupons = [
+        { icon: '🛍️', title: 'Shopping', grad: 'linear-gradient(45deg, #FF9a9e 0%, #Fecfef 99%, #Fecfef 100%)', bg: '#d81b60', msg: 'Time to refresh that wardrobe! Let’s spend the day picking out whatever you love! 💳👗', effect: '💸' },
+        { icon: '🍽️', title: 'Dinner', grad: 'linear-gradient(45deg, #F6d365 0%, #Fda085 100%)', bg: '#e65100', msg: 'A romantic, candlelit dinner at your absolute favorite spot. Just me and you. 🍝🍷', effect: '🕯️' },
+        { icon: '🎬', title: 'Movie', grad: 'linear-gradient(45deg, #A1c4fd 0%, #C2e9fb 100%)', bg: '#0d47a1', msg: 'A cozy movie marathon! I’ll bring the popcorn, you pick the film. 🍿🛋️', effect: '⭐' },
+        { icon: '🎁', title: 'Gift', grad: 'linear-gradient(45deg, #D4fc79 0%, #96e6a1 100%)', bg: '#1b5e20', msg: 'A mystery box is waiting for you... it’s small, but it’s packed with love! 🎀💎', effect: '✨' },
+        { icon: '💆‍♀️', title: 'Spa', grad: 'linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)', bg: '#006064', msg: 'Total relaxation. A day of pampering to make you feel like the queen you are. 🧖‍♀️🛁', effect: '🌸' },
+        { icon: '🚗', title: 'Road Trip', grad: 'linear-gradient(45deg, #Fccb90 0%, #D57eeb 100%)', bg: '#4a148c', msg: 'Let’s hit the road! No destination needed, just good music and your company. 🛣️🎵', effect: '🚗' },
+        { icon: '✨', title: 'One Wish', grad: 'linear-gradient(45deg, #F093fb 0%, #f5576c 100%)', bg: '#000000', msg: 'THE ULTIMATE PRIZE! Firecrackers! 🎆 Ask for anything, and I mean ANYTHING! 💥', effect: '🎇' }
+    ];
+
+    const doubleClickMsgs = [
+        "One at a time, birthday girl! 😂",
+        "Greedy! You already claimed this one! 💖",
+        "Patience! Try a different colorful ticket. 🍭",
+        "Aha! You want double shopping? Nice try! 🛍️",
+        "Error: Too much cuteness detected! Try another gift. ❤️"
+    ];
+
+    let redeemed = 0;
+    const grid = document.getElementById('coupon-grid');
+    const overlay = document.getElementById('event-overlay');
+
+    coupons.forEach((c) => {
+        const card = document.createElement('div');
+        card.className = 'coupon';
+        card.style.background = c.grad;
+        card.innerHTML = `
+            <div class="coupon-inner-hole-top"></div>
+            <div class="coupon-inner-hole-bottom"></div>
+            <div class="left-strip">${c.icon}</div>
+            <div class="main-content">
+                <h2>${c.title}</h2>
+                <p>VALID UNTIL FOREVER</p>
+            </div>
+        `;
+        card.onclick = () => trigger(c, card);
+        grid.appendChild(card);
+    });
+
+    function trigger(c, element) {
+        const isRedeemed = element.classList.contains('redeemed');
+        overlay.style.display = 'flex';
+        overlay.style.backgroundColor = c.bg;
+
+        if (!isRedeemed) {
+            document.getElementById('overlay-title').innerText = c.title + "! 🎉";
+            document.getElementById('overlay-msg').innerText = c.msg;
+            element.classList.add('redeemed');
+            redeemed++;
+            for(let i=0; i<40; i++) spawnParticle(c.effect);
+        } else {
+            const msg = doubleClickMsgs[Math.floor(Math.random() * doubleClickMsgs.length)];
+            document.getElementById('overlay-title').innerText = "Already Claimed! 😉";
+            document.getElementById('overlay-msg').innerText = msg;
+            for(let i=0; i<15; i++) spawnParticle('❤️');
+        }
+    }
+
+    function spawnParticle(symbol) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.innerText = symbol;
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.top = '-50px';
+        p.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+        p.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 3000);
+    }
+
+    function closeOverlay() {
+        overlay.style.display = 'none';
+        if (redeemed === coupons.length) {
+            document.getElementById('header-area').style.display = 'none';
+            grid.style.display = 'none';
+            document.getElementById('final-screen').style.display = 'flex';
+        }
+    }
+
+    function toggleMusic() {
+        const audio = document.getElementById('bg-audio');
+        return audio.paused ? audio.play() : audio.pause();
+    }
+</script>
+
+</body>
+</html>
